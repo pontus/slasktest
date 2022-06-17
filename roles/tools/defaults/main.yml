@@ -1,0 +1,26 @@
+---
+apt_pkg_list:
+  - git
+  - etckeeper
+  - bash-completion
+  - mosh
+  - net-tools
+  - rsync
+  - tmux
+  - emacs-nox
+  - vim
+  - sysstat
+  - yamllint
+  - curl
+  - unattended-upgrades
+  - snapd
+
+snap_pkg_list:
+  - nmap
+  - batcat
+  - docker
+
+apt_not_installed_list:
+  - samba
+  - samba-libs
+  - cups

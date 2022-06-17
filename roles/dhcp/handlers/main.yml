@@ -1,0 +1,12 @@
+---
+
+- name: Reload dnsmasq
+  ansible.builtin.systemd:
+    state: restarted
+    name: dnsmasq.service
+  ignore_errors: true
+
+- name: Apply netplan configuration
+  ansible.builtin.command:
+    cmd: netplan apply
+  ignore_errors: true

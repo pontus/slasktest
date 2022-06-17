@@ -1,0 +1,34 @@
+---
+
+- name: Install dnsmasq
+  ansible.builtin.apt:
+    name:
+      - dnsmasq
+    state: present
+    update_cache: true
+
+- name: Install dnsmasq systemd override
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/dnsmasq.service.d/override.conf
+    src: dnsmasq-override.conf
+
+- name: Create DHCP configuration
+  ansible.builtin.template:
+    src: dnsmasq.conf.j2
+    dest: /etc/dnsmasq.conf
+  notify:
+    - Reload dnsmasq
+
+- name: DHCP request netplan configuration
+  ansible.builtin.template:
+    src: external-dhcp-request.yaml.j2
+    dest: /etc/netplan/70-utsida-external-dhcp-request.yaml
+  notify:
+    - Apply netplan configuration
+
+- name: DHCP serve netplan configuration
+  ansible.builtin.template:
+    src: external-dhcp-serve.yaml.j2
+    dest: /etc/netplan/80-utsida-external-dhcp-serve.yaml
+  notify:
+    - Apply netplan configuration

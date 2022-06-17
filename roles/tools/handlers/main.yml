@@ -1,0 +1,13 @@
+---
+
+- name: Initialize etckeeper
+  ansible.builtin.command:
+    cmd: "sh -c 'etckeeper init && /etc/etckeeper/daily'"
+    chdir: /etc
+    creates: /etc/.git
+
+- name: Start snaps
+  ansible.builtin.command:
+    cmd: "snap start {{ item }}"
+  loop: "{{ snap_pkg_list }}"
+  ignore_errors: true

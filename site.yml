@@ -1,0 +1,12 @@
+---
+- hosts: utsida
+  roles:
+    - { role: tools, become: yes, tags: tools }
+    - { role: disabled_services, become: yes, tags: disabled_services }
+    - { role: multicast, become: yes, tags: multicast }
+    - { role: sshd_configuration, become: yes, tags: sshd_configuration }
+    - { role: bridge, become: yes, tags: bridge }
+    - { role: filters, become: yes, tags: filters }
+    - { role: tunnels, become: yes, tags: tunnels }
+    - { role: sysctl, become: yes, tags: sysctl }
+    - { role: dhcp, become: yes, tags: dhcp }

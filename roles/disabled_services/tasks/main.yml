@@ -1,0 +1,14 @@
+---
+
+- name: Disable unwanted services
+  ansible.builtin.systemd:
+    enabled: no
+    name: "{{ item }}"
+  loop: "{{ disabled_systemd_list }}"
+
+- name: Disable modules
+  kernel_blacklist:
+    name: "{{ item }}"
+  loop: "{{ blacklisted_modules }}"
+    
+

@@ -1,0 +1,23 @@
+{% if external_serve_dhcp_ranges is defined and external_serve_dhcp_ranges %}
+---
+
+network:
+    version: 2
+    renderer: networkd
+    ethernets:
+        "{{ external_if }}":
+            # Handle buggy sriov support
+            virtual-function-count: 0
+{%   if external_vlan is not defined or external_vlan|int == 0 %}
+            addresses:
+            - {{ external_static_ip }}
+{%   endif %}      
+{% endif %}      
+{% if external_vlan is defined and external_vlan|int != 0 %}
+    vlans:
+        "{{ external_if }}.{{ external_vlan }}":
+            id: "{{ external_vlan }}"
+            link: "{{ external_if }}"
+            addresses:
+            - {{ external_static_ip }}
+{% endif %}

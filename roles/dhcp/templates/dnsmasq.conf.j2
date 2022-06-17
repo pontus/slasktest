@@ -1,0 +1,40 @@
+# This file comes from ansible, don't edit here
+{% if not (dhcp_edge_reserve is defined) %}
+{% set dhcp_edge_reserve = "20" %}
+{% endif %}
+{% if not (dhcp_lease_time is defined) %}
+{% set dhcp_lease_time = "36h" %}
+{% endif %}
+
+{% if serve_dhcp_no_ping is defined and serve_dhcp_no_ping==True or serve_dhcp_no_ping|lower in ('yes','true') %}
+no-ping
+{% endif %}
+
+dhcp-option=tag:{{ bridge_name }},6,{{ dns_servers | join(',') }}
+dhcp-option=tag:{{ bridge_name }},3,{{ bridge_ip |ipaddr('address') }}
+
+{% if domain_search_name is defined and domain_search_name %}
+dhcp-option=15,{{ domain_search_name }}
+{% endif %}
+
+{% if external_serve_dhcp_ranges is defined and external_serve_dhcp_ranges %}
+{%   for range in external_serve_dhcp_ranges %}
+dhcp-range=set:external,{{ range }},{{ dhcp_lease_time }}
+{%   endfor %}
+dhcp-option=tag:external,3,{{ external_static_ip |ipaddr('address') }}
+dhcp-option=tag:external,6,{{ dns_servers | join(',') }}
+
+{%   if external_vlan is defined and external_vlan|int != 0 %}
+interface={{ external_if }}.{{ external_vlan }}
+{%   else %}
+interface={{ external_if }}
+{%   endif %}
+{% endif %}
+
+interface={{ bridge_name }}
+
+dhcp-range=set:{{ bridge_name }},{{ (bridge_ip|ipaddr('network')|ipaddr('int')+dhcp_edge_reserve)|ipaddr('address') 
+    }},{{ (bridge_ip|ipaddr('broadcast')|ipaddr('int')-dhcp_edge_reserve)|ipaddr('address') }},{{ dhcp_lease_time }}
+{% for range in extra_dhcp_ranges %}
+dhcp-range=set:{{ bridge_name }},{{ range }},{{ dhcp_lease_time }}
+{% endfor %}
