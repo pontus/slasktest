@@ -1,0 +1,18 @@
+---
+
+- apt: name={{ apt_not_installed_list }} state=absent
+  name: Uninstall unwanted software (apt)
+
+- name: Install software (apt)
+  apt:
+    name: "{{ apt_pkg_list }}"
+    state: present
+    update_cache: true
+  notify:
+    - Initialize etckeeper
+
+- snap: name={{ snap_pkg_list }} state=present
+  name: Install software (snap)
+  notify:
+    - Start snaps
+

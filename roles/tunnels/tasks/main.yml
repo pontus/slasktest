@@ -1,0 +1,10 @@
+---
+- name: Fix configuration for tunnels
+  ansible.builtin.template:
+    src: tunnel.yml
+    dest: /etc/netplan/utsida-tunnel-{{ item['name'] }}.yaml
+  notify:
+    - Apply netplan configuration
+  vars:
+    tunneltorender: "{{ item }}"
+  loop: "{{ tunnels }}"

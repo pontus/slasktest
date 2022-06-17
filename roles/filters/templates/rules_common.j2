@@ -1,0 +1,26 @@
+*mangle
+-I POSTROUTING -p tcp --tcp-flags SYN,RST SYN -o {{ external_if }} -j TCPMSS --clamp-mss-to-pmtu
+COMMIT
+#
+*filter
+-I FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+{% for item in internal %}
+{%   if 'vlan' in internal[item] and internal[item]['vlan']|int != 0 and 'interface' in internal[item] %}
+-I FORWARD -i {{ internal[item]['interface'] }}.{{ internal[item]['vlan'] }} -j ACCEPT
+{%   else %}
+-I FORWARD -i {{ internal[item]['interface'] }} -j ACCEPT
+{%   endif %}
+{% endfor %}
+-I FORWARD -i {{ bridge_name }} -j ACCEPT
+{% if external_serve_dhcp is defined and (external_serve_dhcp==True or external_serve_dhcp|lower in ('yes', 'true')) %}
+{%   if external_vlan is defined and external_vlan|int != 0 %}
+-A ufw-before-input -p udp -m udp --dport 67 -i {{ external_if }}.{{ external_vlan }} -j ACCEPT
+-A ufw-before-output -p udp -m udp --dport 68 -o {{ external_if }}.{{ external_vlan }} -j ACCEPT
+{%   else %}
+-A ufw-before-input -p udp -m udp --dport 67 -i {{ external_if }} -j ACCEPT
+-A ufw-before-output -p udp -m udp --dport 68 -o {{ external_if }} -j ACCEPT
+{%   endif %}
+{% endif %}
+-A ufw-before-input -p udp -m udp --dport 67 -i {{ bridge_name }} -j ACCEPT
+-A ufw-before-output -p udp -m udp --dport 68 -o {{ bridge_name }} -j ACCEPT
+COMMIT

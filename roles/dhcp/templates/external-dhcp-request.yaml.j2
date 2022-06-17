@@ -1,0 +1,25 @@
+{% if external_request_dhcp is defined and external_request_dhcp==True or external_request_dhcp|lower in ('yes', 'true') %}
+---
+
+network:
+    version: 2
+    renderer: networkd
+    ethernets:
+        "{{ external_if }}":
+            # Handle buggy sriov support
+            virtual-function-count: 0
+{%   if external_vlan is not defined or external_vlan|int == 0 %}
+            dhcp4: yes
+            dhcp6: yes
+{%   endif %}      
+{% endif %}      
+{% if external_vlan is defined and external_vlan|int != 0 %}
+    vlans:
+        "{{ external_if }}.{{ external_vlan }}":
+            id: "{{ external_vlan }}"
+            link: "{{ external_if }}"
+{%   if external_dhcp is defined and external_dhcp==True or external_dhcp|lower in ('yes','true') %}
+            dhcp4: yes
+            dhcp6: yes
+{%   endif %}      
+{% endif %}

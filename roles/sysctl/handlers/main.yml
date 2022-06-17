@@ -1,0 +1,5 @@
+---
+- name: Reload sysctl
+  ansible.builtin.systemd:
+    state: restarted
+    name: systemd-sysctl.service

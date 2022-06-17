@@ -1,0 +1,33 @@
+---
+# This file comes from ansible, do not change
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    "{{ external_if }}":
+      # Handle buggy sriov support
+      virtual-function-count: 0
+  vlans:
+{% for item in internal %}
+{%   if 'vlan' in internal[item] and internal[item]['vlan']|int != 0 and 'interface' in internal[item] %}
+    "{{ internal[item]['interface'] }}.{{ internal[item]['vlan'] }}":
+      id: "{{ internal[item]['vlan'] }}"
+      link: "{{ internal[item]['interface'] }}"
+{%   endif -%}
+{% endfor %}
+  bridges:
+    "{{ bridge_name }}":
+      dhcp4: "no"
+      addresses:
+        - "{{ bridge_ip }}"
+      interfaces:
+{% for item in internal %}
+{%   if 'interface' in internal[item]  %}
+{%     if 'vlan' in internal[item] and internal[item]['vlan']|int != 0 %}
+        - "{{ internal[item]['interface'] }}.{{ internal[item]['vlan'] }}"
+{%     else %}
+        - "{{ internal[item]['interface'] }}"
+{%     endif %}
+{%   endif %}
+{% endfor %}

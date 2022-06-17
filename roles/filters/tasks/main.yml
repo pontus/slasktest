@@ -1,0 +1,27 @@
+---
+- name: Fix general rules
+  ansible.builtin.blockinfile:
+    dest: /etc/ufw/before.rules
+    block: "{{ lookup('template', 'rules_common.j2') }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK GENERAL"
+  notify:
+    - Reload ufw
+
+- name: Fix nat rules
+  ansible.builtin.blockinfile:
+    dest: /etc/ufw/before.rules
+    block: "{{ lookup('template', 'rules_nat.j2') }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK FOR NAT"
+  notify:
+    - Reload ufw
+  when: nat==True or nat|lower in ('yes', 'true')
+
+- name: Set up allowances for apps
+  ansible.builtin.command:
+    cmd: ufw allow "{{ item }}"
+  loop: "{{ allowed_apps }}"
+
+- name: Enable filtering
+  ansible.builtin.command:
+    cmd: ufw enable
+    stdin: yes

@@ -1,0 +1,17 @@
+---
+- name: Install software for multicast routing
+  ansible.builtin.apt:
+    name: "{{ pimd_pkg_list }}"
+    state: present
+
+- name: Fix configuration for multicast
+  ansible.builtin.template:
+    src: pimd.conf
+    dest: /etc/pimd.conf
+  notify:
+    - Restart pimd
+
+- name: Turn on services
+  ansible.builtin.systemd:
+    enabled: yes
+    name: pimd.service

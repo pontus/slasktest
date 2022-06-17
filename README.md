@@ -1,0 +1,2 @@
+# utsida
+Konfiguration för utsidesmaskin

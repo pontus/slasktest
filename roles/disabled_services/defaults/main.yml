@@ -1,0 +1,13 @@
+---
+
+disabled_systemd_list:
+  - open-iscsi
+
+blacklisted_modules:
+  - iscsi_tcp
+  - libiscsi
+  - scsi_transport_iscsi
+  - raid10
+  - raid456
+  - raid1
+  - raid0

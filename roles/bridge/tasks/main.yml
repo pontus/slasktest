@@ -1,0 +1,7 @@
+---
+- name: Fix configuration for bridge
+  ansible.builtin.template:
+    src: bridge.yml
+    dest: /etc/netplan/90-utsida-{{ bridge_name }}.yaml
+  #notify:
+  #  - Apply netplan configuration

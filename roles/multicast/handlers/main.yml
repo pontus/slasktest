@@ -1,0 +1,5 @@
+---
+- name: Restart pimd
+  ansible.builtin.systemd:
+    state: restarted
+    name: pimd.service

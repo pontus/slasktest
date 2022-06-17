@@ -1,0 +1,15 @@
+*nat
+{% if external_vlan is defined and external_vlan|int != 0 %}
+{%   if external_static_ip is defined and external_static_ip %}
+-A POSTROUTING -o {{ external_if }}.{{ external_vlan }} ! -d {{ external_static_ip | ipaddr('network/prefix') }} -j MASQUERADE
+{%   else %}
+-A POSTROUTING -o {{ external_if }}.{{ external_vlan }} -j MASQUERADE
+{%   endif %}
+{% else %}
+{%   if external_static_ip is defined and external_static_ip %}
+-A POSTROUTING -o {{ external_if }} ! -d {{ external_static_ip | ipaddr('network/prefix') }} -j MASQUERADE
+{%   else %}
+-A POSTROUTING -o {{ external_if }} -j MASQUERADE
+{%   endif %}
+{% endif %}
+COMMIT

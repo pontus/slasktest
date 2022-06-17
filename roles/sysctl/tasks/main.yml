@@ -1,0 +1,7 @@
+---
+- name: Set host to forward IP
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/50-forward.conf
+    src: forward.conf
+  notify:
+    - Reload sysctl

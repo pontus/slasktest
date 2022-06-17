@@ -1,0 +1,20 @@
+{% if 'enabled' in tunneltorender and tunneltorender['enabled']==True or tunneltorender['enabled']|lower in ('true','yes') %}
+---
+
+network:
+  version: 2
+  renderer: networkd
+  tunnels:
+    {{ tunneltorender['devname'] }}:
+{%   if tunneltorender['details']['type'] == 'sit' %}
+      mode: {{ tunneltorender['details']['type'] }}
+      remote: {{ tunneltorender['details']['remote'] }}
+{%     if 'local' in tunneltorender['details'].keys() %}
+      local: {{ tunneltorender['details']['local'] }}
+{%     else %}
+      local: 0.0.0.0
+{%     endif %}
+{%   endif %}
+      addresses:
+      - "{{ tunneltorender['ip'] }}/{{ tunneltorender['netmask'] }}"
+{% endif %}
